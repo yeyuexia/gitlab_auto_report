@@ -7,9 +7,7 @@
 #使用方式
 安装依赖，在config.py文件里定义自己要连接的gitlab地址，执行下面代码：
 ```
-from gather import Gitlab, stat
-git = Gitlab(token)
-stat(git.get_contribute_details(git.user, git.email, datetime)
+python gather.py -t daily token
 ```
 就会打印出一份从datetime到现在的报表，方便提交日报, 周报用
 #一些细节
