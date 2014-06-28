@@ -24,7 +24,7 @@ class Gitlab(gitlab.Gitlab):
         self.email = user["email"]
 
     def _format_datetime(self, time):
-        return datetime.date.strptime(
+        return datetime.datetime.strptime(
             time.split("T", 1)[0], "%Y-%m-%d"
         )
 
@@ -159,7 +159,7 @@ class Gitlab(gitlab.Gitlab):
                     res[project_name][label].update(contributes)
         return res
 
-    def get_my_crontrbutes(self, date):
+    def get_my_contributes(self, date):
         return self.get_contribute_details(self.user, self.email, date)
 
 
@@ -167,8 +167,12 @@ class Stat(object):
     def __init__(self, git):
         self.git = git
 
+    def _today(self):
+        now = datetime.datetime.now()
+        return datetime.datetime(now.year, now.month, now.day)
+
     def stat_my_daily(self):
-        res = self.git.get_my_contributes(datetime.date.today())
+        res = self.git.get_my_contributes(self._today())
 
         text = u"本日工作:\n\n"
         text += self._stat(res)
@@ -176,7 +180,7 @@ class Stat(object):
 
     def stat_my_weekly(self):
         res = self.git.get_my_contributes(
-            datetime.date.today() - datetime.timedelta(days=7)
+            self._today() - datetime.timedelta(days=7)
         )
 
         text = u"本周工作:\n\n"
@@ -256,9 +260,9 @@ if __name__ == "__main__":
     )
     opts, args = parser.parse_args()
     print opts, args
-    if len(args) >= 2:
+    if len(args) >= 1:
         stat = Stat(Gitlab(args[0]))
-        stat_type = opts["stat_type"]
+        stat_type = opts.stat_type
         if stat_type == "daily":
             print stat.stat_my_daily().encode("utf8", "ignore")
         elif stat_type == "weekly":
